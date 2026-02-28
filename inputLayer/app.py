@@ -93,7 +93,7 @@ def severity_badge(severity: str) -> str:
 
 if page == "📄 Extract & Validate":
 
-    st.title("📄 Trademark PDF Extractor + Validator")
+    st.title("TARA AI For Trademark ")
 
     st.info("""
     **How this works:**
