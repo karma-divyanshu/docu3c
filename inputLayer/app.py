@@ -222,22 +222,45 @@ if page == "📄 Extract & Validate":
             st.json(data)
 
         # ── RUN ASSESSMENT (only if clean) ──────────────
+        # if result["status"] == "ok":
+        #     st.markdown("---")
+        #     if st.button("⚖️ Run Pillar 1 Assessment", type="primary"):
+        #         try:
+        #             from main import assess_trademark_application
+        #             assessment = assess_trademark_application(data)
+
+        #             st.subheader("Pillar 1 Report (§1401 Classification)")
+        #             st.text_area("Report", assessment["report"], height=500)
+        #             st.subheader("Summary")
+        #             st.json(assessment["summary"])
+        #         except ImportError:
+        #             st.error("main.py / assessment modules not found. Ensure they are in the same directory.")
+        #         except Exception as e:
+        #             st.error(f"Assessment error: {e}")
         if result["status"] == "ok":
             st.markdown("---")
-            if st.button("⚖️ Run Pillar 1 Assessment", type="primary"):
+            if st.button("⚖️ Run Full Examination (Pillar 1–3)", type="primary"):
                 try:
-                    from main import assess_trademark_application
-                    assessment = assess_trademark_application(data)
+                    from run_pipeline import run_full_pipeline
 
-                    st.subheader("Pillar 1 Report (§1401 Classification)")
-                    st.text_area("Report", assessment["report"], height=500)
-                    st.subheader("Summary")
-                    st.json(assessment["summary"])
+                    state = run_full_pipeline(data)
+
+                    st.subheader("Pipeline Structural Summary")
+
+                    st.write("Structurally Clean:", state.is_structurally_clean())
+                    st.write("Partial Refusal Classes:", state.get_partial_refusal_classes())
+                    st.write("Division Candidates:", state.get_division_candidates())
+
+                    st.subheader("Pillar 1 Summary")
+                    st.json(state.pillar1_output.get("summary", {}))
+
+                    st.subheader("Pillar 3 Errors")
+                    st.write(state.pillar3_output.total_errors)
+
                 except ImportError:
-                    st.error("main.py / assessment modules not found. Ensure they are in the same directory.")
+                    st.error("run_pipeline.py not found in project root.")
                 except Exception as e:
-                    st.error(f"Assessment error: {e}")
-
+                    st.error(f"Pipeline error: {e}")
 
 # =========================================================
 # PAGE 2: REVIEW QUEUE
